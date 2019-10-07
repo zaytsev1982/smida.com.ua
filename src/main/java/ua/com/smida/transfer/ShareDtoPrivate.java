@@ -11,21 +11,31 @@ import ua.com.smida.model.Share;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShareDtoPublic {
+public class ShareDtoPrivate {
 
+    private Long id;
+    private String comments;
+    private Integer capital;
     private Integer codeCompany;
     private Integer quantity;
     private Double amount;
     private Double price;
+    private Double duty;
     private LocalDateTime createDate;
+    private LocalDateTime modifyDate;
+    private Integer version;
 
-    public static ShareDtoPublic open(Share share) {
-        return ShareDtoPublic.builder()
+    public static ShareDtoPrivate hidden(Share share) {
+        return ShareDtoPrivate.builder()
+            .comments(share.getComments())
+            .capital(share.getCapital())
             .codeCompany(share.getCodeCompany())
             .quantity(share.getQuantity())
             .amount(share.getAmount())
             .price(share.getPrice())
             .createDate(share.getCreateDate())
+            .modifyDate(share.getModifyDate())
+            .version(share.getVersion())
             .build();
     }
 }

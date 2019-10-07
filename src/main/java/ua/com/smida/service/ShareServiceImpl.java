@@ -1,7 +1,10 @@
 package ua.com.smida.service;
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.smida.model.Share;
@@ -21,17 +24,26 @@ public class ShareServiceImpl implements ShareService {
 
     @Override
     public Share create(Share share) {
-        if (share.getId() != null) {
-           return repository.save(share);
-        }
         share.setAmount(share.getPrice() * share.getQuantity());
         log.info("share created successfully, details : {}", share);
         return repository.save(share);
     }
 
     @Override
-    public Share update(Long id) {
-        return null;
+    public Share update(Long id, Share share) {
+        return repository.findById(id)
+            .map(candidate -> {
+                candidate.setComments(share.getComments());
+                candidate.setCodeCompany(share.getCodeCompany());
+                candidate.setCapital(share.getCapital());
+                candidate.setQuantity(share.getQuantity());
+                candidate.setDuty(share.getDuty());
+                candidate.setPrice(share.getPrice());
+                candidate.setQuantity(share.getQuantity());
+                candidate.setAmount(share.getPrice() * share.getQuantity());
+                return repository.save(candidate);
+            }).orElseThrow(() -> new IllegalArgumentException("share not found"));
+
     }
 
     @Override
@@ -39,5 +51,16 @@ public class ShareServiceImpl implements ShareService {
         return repository
             .findById(id).orElseThrow(
                 () -> new IllegalArgumentException("not found"));
+    }
+
+    @Override
+    public List<Share> findAllByCodeCompany(Integer code) {
+        List<Share> shareList = repository.findAllByCodeCompany(code);
+        return shareList;
+    }
+
+    @Override
+    public Page<Share> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 }
