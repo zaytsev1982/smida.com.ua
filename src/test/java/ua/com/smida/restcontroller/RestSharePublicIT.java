@@ -90,5 +90,6 @@ public class RestSharePublicIT {
             .andExpect(jsonPath("$.*").isArray())
             .andExpect(status().isOk())
             .andReturn();
+
     }
 }
