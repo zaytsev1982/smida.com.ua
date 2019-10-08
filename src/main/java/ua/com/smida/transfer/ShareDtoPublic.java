@@ -1,6 +1,6 @@
 package ua.com.smida.transfer;
 
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +17,7 @@ public class ShareDtoPublic {
     private Integer quantity;
     private Double amount;
     private Double price;
-    private LocalDateTime createDate;
+    private String createDate;
 
     public static ShareDtoPublic open(Share share) {
         return ShareDtoPublic.builder()
@@ -25,7 +25,8 @@ public class ShareDtoPublic {
             .quantity(share.getQuantity())
             .amount(share.getAmount())
             .price(share.getPrice())
-            .createDate(share.getCreateDate())
+            .createDate(
+                share.getCreateDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
             .build();
     }
 }

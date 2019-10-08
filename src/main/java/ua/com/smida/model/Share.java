@@ -1,6 +1,7 @@
 package ua.com.smida.model;
 
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
@@ -28,16 +29,25 @@ public class Share {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "comments")
     private String comments;
+    @Column(name = "capital")
     private Integer capital;
+    @Column(name = "code_company")
     private Integer codeCompany;
+    @Column(name = "quantity")
     private Integer quantity;
+    @Column(name = "amount")
     private Double amount;
+    @Column(name = "price")
     private Double price;
+    @Column(name = "duty")
     private Double duty;
     @CreatedDate
+    @Column(name = "create_date")
     private LocalDateTime createDate;
     @LastModifiedDate
+    @Column(name = "modify_date")
     private LocalDateTime modifyDate;
     @Version
     private Integer version;

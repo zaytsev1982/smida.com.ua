@@ -36,17 +36,29 @@ public class RestSharePublic {
 
         Share candidate = shareService.findOne(id);
         if (candidate == null) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         ShareDtoPublic shareDtoPublic = ShareDtoPublic.open(candidate);
         return new ResponseEntity<>(shareDtoPublic, HttpStatus.OK);
     }
 
-    @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(path = "/company", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<ShareDtoPublic>> getAll(@RequestParam("codeCompany") Integer code) {
         List<Share> list = shareService.findAllByCodeCompany(code);
         if (list.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        List<ShareDtoPublic> publicList = get(list);
+
+        return new ResponseEntity<>(publicList, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/all", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<ShareDtoPublic>> getAll() {
+        List<Share> list = shareService.findAll();
+        if (list.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         List<ShareDtoPublic> publicList = get(list);
@@ -56,11 +68,14 @@ public class RestSharePublic {
 
 
     @GetMapping(path = "/pages", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<ShareDtoPublic>> pages(@RequestParam("pageNo") Integer pageNo,
-        @RequestParam("pageSize") Integer pageSize, @RequestParam("sortBy") String orderBy) {
+    public ResponseEntity<List<ShareDtoPublic>> pages(
+        @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
+        @RequestParam(value = "pageSize", defaultValue = "1") Integer pageSize,
+        @RequestParam(value = "sortBy", defaultValue = "version") String... orderBy) {
 
         Pageable pageable = PageRequest
-            .of(pageNo - 1, pageSize, Sort.by(orderBy).descending());
+            .of(pageNo - 1, pageSize,
+                Sort.by(orderBy).descending().and(Sort.by(orderBy)).and(Sort.by(orderBy)));
         List<Share> collect = shareService.findAll(pageable).stream().collect(Collectors.toList());
         List<ShareDtoPublic> publicList = get(collect);
 

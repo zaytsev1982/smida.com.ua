@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ua.com.smida.exception.CompanyCodeNotFoundException;
+import ua.com.smida.exception.ShareNotFoundException;
 import ua.com.smida.model.Share;
 import ua.com.smida.repository.ShareRepository;
 
@@ -50,17 +52,34 @@ public class ShareServiceImpl implements ShareService {
     public Share findOne(Long id) {
         return repository
             .findById(id).orElseThrow(
-                () -> new IllegalArgumentException("not found"));
+                () -> new ShareNotFoundException("share with id: " + id + " not found"));
     }
 
     @Override
     public List<Share> findAllByCodeCompany(Integer code) {
         List<Share> shareList = repository.findAllByCodeCompany(code);
+        if (shareList.isEmpty()) {
+            log.info("in findAllByCodeCompany, code {} not found", code);
+            throw new CompanyCodeNotFoundException("code :" + code + " not found");
+        }
+        log.info("in findAllByCodeCompany, size share - {}", shareList.size());
         return shareList;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Share> findAll(Pageable pageable) {
+
         return repository.findAll(pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Share> findAll() {
+        if (repository.findAll().isEmpty()) {
+            log.info("in findAll, list is empty");
+        }
+        log.info("in findAllByCodeCompany, size share - {}", repository.findAll().size());
+        return repository.findAll();
     }
 }

@@ -17,4 +17,5 @@ public interface ShareService {
 
     Page<Share> findAll(Pageable pageable);
 
+    List<Share> findAll();
 }
