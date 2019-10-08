@@ -3,6 +3,7 @@ package ua.com.smida.restcontroller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import ua.com.smida.transfer.ShareDtoPrivate;
 
 @RestController
 @RequestMapping(path = "/api/v1/private/")
+@Slf4j
 public class RestSharePrivate {
 
     private final ShareService shareService;
@@ -38,9 +40,10 @@ public class RestSharePrivate {
 
         Share candidate = shareService.create(share);
         if (candidate == null) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            log.info("in create, share cannot be saved");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
+        log.info("in create, share saved successfully : {}", share);
         return new ResponseEntity<>(share, HttpStatus.CREATED);
     }
 
@@ -48,34 +51,41 @@ public class RestSharePrivate {
     @PutMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Share> update(@PathVariable("id") Long id, @RequestBody Share share) {
         Share update = shareService.update(id, share);
-
         if (update.getId() == null) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            log.info("in update, share with id {} not found", id);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        return new ResponseEntity<>(update, HttpStatus.CREATED);
+        log.info("in update, share change successfully : {}", share);
+        return new ResponseEntity<>(update, HttpStatus.OK);
     }
 
     @GetMapping(path = "/all", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<ShareDtoPrivate>> getAll() {
         List<Share> list = shareService.findAll();
         if (list.isEmpty()) {
+            log.info("in all, list empty");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         List<ShareDtoPrivate> publicList = get(list);
-
+        log.info("in all, list have size : {}", publicList.size());
         return new ResponseEntity<>(publicList, HttpStatus.OK);
     }
 
     @GetMapping(path = "/pages", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<Share>> pages(@RequestParam("pageNo") Integer pageNo,
-        @RequestParam("pageSize") Integer pageSize, @RequestParam("sortBy") String... orderBy) {
-
-        Pageable pageable = PageRequest
+    public ResponseEntity<List<Share>> pages(
+        @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
+        @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+        @RequestParam(value = "sortBy", defaultValue = "version") String... orderBy) {
+        Pageable specification = PageRequest
             .of(pageNo - 1, pageSize,
                 Sort.by(orderBy).descending().and(Sort.by(orderBy)).and(Sort.by(orderBy)));
-        List<Share> collect = shareService.findAll(pageable).stream().collect(Collectors.toList());
+        List<Share> collect = shareService.findAll(specification).stream()
+            .collect(Collectors.toList());
+        log.info(
+            "in pages, list shares with filter number pages -{}, page size- {}, sort by- {} found successfully ",
+            pageNo,
+            pageSize, orderBy);
         return new ResponseEntity<>(collect, HttpStatus.OK);
     }
 

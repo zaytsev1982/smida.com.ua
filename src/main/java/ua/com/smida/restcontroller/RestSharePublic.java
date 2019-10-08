@@ -3,6 +3,7 @@ package ua.com.smida.restcontroller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import ua.com.smida.transfer.ShareDtoPublic;
 
 @RestController
 @RequestMapping(path = "/api/v1/public")
+@Slf4j
 public class RestSharePublic {
 
     private final ShareService shareService;
@@ -70,7 +72,7 @@ public class RestSharePublic {
     @GetMapping(path = "/pages", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<ShareDtoPublic>> pages(
         @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
-        @RequestParam(value = "pageSize", defaultValue = "1") Integer pageSize,
+        @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
         @RequestParam(value = "sortBy", defaultValue = "version") String... orderBy) {
 
         Pageable pageable = PageRequest
@@ -78,7 +80,10 @@ public class RestSharePublic {
                 Sort.by(orderBy).descending().and(Sort.by(orderBy)).and(Sort.by(orderBy)));
         List<Share> collect = shareService.findAll(pageable).stream().collect(Collectors.toList());
         List<ShareDtoPublic> publicList = get(collect);
-
+        log.info(
+            "in pages, list shares with filter number pages -{}, page size- {}, sort by- {} found successfully ",
+            pageNo,
+            pageSize, orderBy);
         return new ResponseEntity<>(publicList, HttpStatus.OK);
     }
 
