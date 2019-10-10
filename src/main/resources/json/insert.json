@@ -1,0 +1,50 @@
+[
+  {
+    "comments":"company 1",
+    "capital":5426,
+    "codeCompany": 1,
+    "quantity":400,
+    "price":103.0,
+    "duty":23.5
+  },
+  {
+    "comments":"company 2",
+    "capital":54126,
+    "codeCompany": 12,
+    "quantity":300,
+    "price":103.0,
+    "duty":23.5
+  },
+  {
+    "comments":"company 3",
+    "capital":54226,
+    "codeCompany": 123,
+    "quantity":200,
+    "price":103.0,
+    "duty":23.5
+  },
+  {
+    "comments":"company 4",
+    "capital":5426,
+    "codeCompany": 45,
+    "quantity":100,
+    "price":103.0,
+    "duty":23.5
+  },
+  {
+    "comments":"company 5",
+    "capital":53426,
+    "codeCompany": 1245,
+    "quantity":100,
+    "price":103.0,
+    "duty":23.5
+  },
+  {
+    "comments":"company 5",
+    "capital":53426,
+    "codeCompany": 1245,
+    "quantity":1200,
+    "price":103.0,
+    "duty":23.5
+  }
+]
