@@ -26,7 +26,7 @@ public class ShareServiceImpl implements ShareService {
 
     @Override
     public Share create(Share share) {
-        share.setAmount(share.getPrice() * share.getQuantity());
+        share.setAmount(getAmount(share));
         log.info("share created successfully, details : {}", share);
         return repository.save(share);
     }
@@ -42,9 +42,11 @@ public class ShareServiceImpl implements ShareService {
                 candidate.setDuty(share.getDuty());
                 candidate.setPrice(share.getPrice());
                 candidate.setQuantity(share.getQuantity());
-                candidate.setAmount(share.getPrice() * share.getQuantity());
+                candidate.setAmount(getAmount(share));
+                log.info("share updated successfully, details : {}", share);
                 return repository.save(candidate);
-            }).orElseThrow(() -> new IllegalArgumentException("share not found"));
+            })
+            .orElseThrow(() -> new ShareNotFoundException("share with id : " + id + "  not found"));
 
     }
 
@@ -76,10 +78,17 @@ public class ShareServiceImpl implements ShareService {
     @Override
     @Transactional(readOnly = true)
     public List<Share> findAll() {
-        if (repository.findAll().isEmpty()) {
+        List<Share> shares = repository.findAll();
+        if (shares.isEmpty()) {
             log.info("in findAll, list is empty");
         }
-        log.info("in findAllByCodeCompany, size share - {}", repository.findAll().size());
-        return repository.findAll();
+        log.info("in findAllByCodeCompany, size share - {}", shares.size());
+        return shares;
     }
+
+
+    private double getAmount(Share share) {
+        return share.getPrice() * share.getQuantity();
+    }
+
 }

@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -74,17 +71,15 @@ public class RestSharePublic {
         @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
         @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
         @RequestParam(value = "sortBy", defaultValue = "version") String... orderBy) {
-
-        Pageable pageable = PageRequest
-            .of(pageNo - 1, pageSize,
-                Sort.by(orderBy).descending().and(Sort.by(orderBy)).and(Sort.by(orderBy)));
-        List<Share> collect = shareService.findAll(pageable).stream().collect(Collectors.toList());
-        List<ShareDtoPublic> publicList = get(collect);
+        List<Share> shares = shareService
+            .findAll(RestControllerUtils.getPageable(pageNo, pageSize, orderBy))
+            .stream()
+            .collect(Collectors.toList());
         log.info(
             "in pages, list shares with filter number pages -{}, page size- {}, sort by- {} found successfully ",
             pageNo,
             pageSize, orderBy);
-        return new ResponseEntity<>(publicList, HttpStatus.OK);
+        return new ResponseEntity<>(get(shares), HttpStatus.OK);
     }
 
     private List<ShareDtoPublic> get(List<Share> list) {
