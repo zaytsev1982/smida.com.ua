@@ -19,7 +19,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "usr")
+@Table(name = "account")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,12 +30,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
-    @Column(name = "login")
+    @Column(name = "user_name")
     private String login;
     @Column(name = "password")
     private String password;
     @ElementCollection
-    @CollectionTable(name = "usr_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(name = "roles", joinColumns = @JoinColumn(name = "account_id"))
     @Enumerated(EnumType.STRING)
-    Set<Role> roleSet = new HashSet<>();
+    Set<Role> roles = new HashSet<>();
 }
