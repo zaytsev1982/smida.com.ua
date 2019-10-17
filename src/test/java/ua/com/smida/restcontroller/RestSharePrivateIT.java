@@ -15,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,6 +34,7 @@ public class RestSharePrivateIT {
     @Autowired
     private MockMvc mockMvc;
 
+    @WithMockUser(roles = "ADMIN")
     @Test
     public void shouldBeCreate() throws Exception {
         Share candidate = Share
@@ -54,6 +58,7 @@ public class RestSharePrivateIT {
             .andExpect(jsonPath("$.capital", is(1000000)));
     }
 
+    @WithMockUser(roles = "ADMIN")
     @Test
     public void shouldUpdate() throws Exception {
         Share candidate = Share
@@ -75,6 +80,7 @@ public class RestSharePrivateIT {
 
     }
 
+    @WithMockUser(roles = {"USER", "ADMIN"})
     @Test
     public void shouldBeGetAll() throws Exception {
         mockMvc
@@ -86,6 +92,7 @@ public class RestSharePrivateIT {
             .andReturn();
     }
 
+    @WithMockUser(roles = {"USER", "ADMIN"})
     @Test
     public void shouldBeGetAllByCriteria() throws Exception {
 

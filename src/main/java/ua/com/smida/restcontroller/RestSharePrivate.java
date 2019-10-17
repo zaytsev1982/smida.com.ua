@@ -22,7 +22,7 @@ import ua.com.smida.service.ShareService;
 import ua.com.smida.transfer.ShareDtoPrivate;
 
 @RestController
-@RequestMapping(path = "/api/v1/private/")
+@RequestMapping(path = "/api/v1/private")
 @Slf4j
 public class RestSharePrivate {
 
@@ -45,7 +45,7 @@ public class RestSharePrivate {
     }
 
 
-    @PutMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Share> update(@PathVariable("id") Long id,
         @Valid @RequestBody Share share) {
         Share update = shareService.update(id, share);

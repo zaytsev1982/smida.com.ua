@@ -18,7 +18,7 @@ import ua.com.smida.service.ShareService;
 import ua.com.smida.transfer.ShareDtoPublic;
 
 @RestController
-@RequestMapping(path = "/api/v1/public")
+@RequestMapping(path = "/api/v1/public/")
 @Slf4j
 public class RestSharePublic {
 
@@ -30,7 +30,7 @@ public class RestSharePublic {
     }
 
 
-    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ShareDtoPublic> getOne(@PathVariable("id") Long id) {
 
         Share candidate = shareService.findOne(id);
@@ -41,7 +41,7 @@ public class RestSharePublic {
         return new ResponseEntity<>(shareDtoPublic, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/company", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(path = "company", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<ShareDtoPublic>> getAll(@RequestParam("codeCompany") Integer code) {
         List<Share> list = shareService.findAllByCodeCompany(code);
         if (list.isEmpty()) {
@@ -53,7 +53,7 @@ public class RestSharePublic {
         return new ResponseEntity<>(publicList, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/all", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(path = "all", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<ShareDtoPublic>> getAll() {
         List<Share> list = shareService.findAll();
         if (list.isEmpty()) {
@@ -66,7 +66,7 @@ public class RestSharePublic {
     }
 
 
-    @GetMapping(path = "/pages", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(path = "pages", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<ShareDtoPublic>> pages(
         @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
         @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,

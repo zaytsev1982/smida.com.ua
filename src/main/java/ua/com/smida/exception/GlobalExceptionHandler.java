@@ -27,7 +27,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorEntity details = ErrorEntity
             .builder()
             .localDateTime(LocalDateTime.now())
-            .messages(Collections.singletonMap("message: ",ex.getMessage()))
+            .messages(Collections.singletonMap("message: ", ex.getMessage()))
             .details(webRequest.getDescription(false))
             .build();
         log.info("GlobalExceptionHandler in shareErrorHandler {} ", details);
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorEntity details = ErrorEntity
             .builder()
             .localDateTime(LocalDateTime.now())
-            .messages(Collections.singletonMap("message: ",ex.getMessage()))
+            .messages(Collections.singletonMap("message: ", ex.getMessage()))
             .details(webRequest.getDescription(false))
             .build();
         log.info("GlobalExceptionHandler in codeCompanyErrorHandler {} ", details);
@@ -74,6 +74,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.info("GlobalExceptionHandler in handleMethodArgumentNotValid {} ", details);
         return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
 
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(UserLoginNotFoundException.class)
+    public ResponseEntity<ErrorEntity> userNotFoundErrorHandler(UserLoginNotFoundException ex,
+        WebRequest request) {
+        ErrorEntity details = ErrorEntity
+            .builder()
+            .localDateTime(LocalDateTime.now())
+            .messages(Collections.singletonMap("message", ex.getMessage()))
+            .details(request.getDescription(false))
+            .build();
+        log.info("GlobalExceptionHandler in userNotFoundErrorHandler {} ", details);
+        return new ResponseEntity<>(details, HttpStatus.NOT_FOUND);
     }
 
 
