@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,9 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -44,6 +43,7 @@ public class RestSharePrivateIT {
             .price(123.9)
             .quantity(250000)
             .capital(1000000)
+            .duty(13.3)
             .build();
 
         mockMvc.perform(post("/api/v1/private/")
@@ -55,7 +55,9 @@ public class RestSharePrivateIT {
             .andExpect(jsonPath("$.codeCompany", is(10000)))
             .andExpect(jsonPath("$.price", is(123.9)))
             .andExpect(jsonPath("$.quantity", is(250000)))
-            .andExpect(jsonPath("$.capital", is(1000000)));
+            .andExpect(jsonPath("$.capital", is(1000000)))
+            .andExpect(jsonPath("$.duty", is(13.3)))
+            .andDo(print());
     }
 
     @WithMockUser(roles = "ADMIN")
@@ -75,7 +77,12 @@ public class RestSharePrivateIT {
             .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
             .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.comments", is("company 10")));
+            .andExpect(jsonPath("$.comments", is("company 10")))
+            .andExpect(jsonPath("$.codeCompany", is(10000)))
+            .andExpect(jsonPath("$.price", is(123.9)))
+            .andExpect(jsonPath("$.quantity", is(250000)))
+            .andExpect(jsonPath("$.capital", is(1000000)))
+            .andDo(print());
 
 
     }
@@ -102,6 +109,14 @@ public class RestSharePrivateIT {
                 .param("pageNo", String.valueOf(1))
                 .param("pageSize", String.valueOf(6))
                 .param("sortBy", "version", "codeCompany", "amount"))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.*").isNotEmpty())
+            .andExpect(jsonPath("$.*").isArray())
+            .andExpect(status().isOk())
+            .andReturn();
+        //without param
+        mockMvc
+            .perform(get(BASIC + "/pages"))
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.*").isNotEmpty())
             .andExpect(jsonPath("$.*").isArray())

@@ -3,6 +3,7 @@ package ua.com.smida.restcontroller.auth;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,9 +52,41 @@ public class AuthRestControllerIT {
             .perform(post("/api/v1/registration")
                 .content(jsonRequest)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(status().isCreated()).andReturn();
+            .andExpect(status().isCreated())
+            .andDo(print())
+            .andReturn();
 
         assertEquals(201, result.getResponse().getStatus());
+    }
+
+    @Test
+    public void shouldGetStatus200Or403() throws Exception {
+        User userStatus200 = User
+            .builder()
+            .login("user")
+            .password("user")
+            .build();
+        String jsonRequest200 = mapper.writeValueAsString(userStatus200);
+        mvc.perform(
+            post("/api/v1/login")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonRequest200)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk())
+            .andDo(print());
+        User userStatus403 = User
+            .builder()
+            .login("user1")
+            .password("user")
+            .build();
+        String jsonRequest403 = mapper.writeValueAsString(userStatus403);
+        mvc.perform(
+            post("/api/v1/login")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonRequest403)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isForbidden())
+            .andDo(print());
     }
 
 }

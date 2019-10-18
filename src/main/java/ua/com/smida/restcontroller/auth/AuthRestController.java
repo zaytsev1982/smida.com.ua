@@ -68,7 +68,6 @@ public class AuthRestController {
             Map<Object, Object> response = new HashMap<>();
             response.put("username", username);
             response.put("token", "Bearer_" + token);
-
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
             throw new BadCredentialsException("Invalid username or password");
