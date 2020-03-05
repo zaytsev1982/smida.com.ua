@@ -75,10 +75,11 @@ public class RestSharePrivate {
     public ResponseEntity<List<ShareDtoPrivate>> pages(
         @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
         @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
-        @RequestParam(value = "sortBy", defaultValue = "version") String... orderBy) {
+        @RequestParam(value = "sortBy", defaultValue = "version") String[] orderBy,
+        @RequestParam(value = "secondBy", defaultValue = "version") String[] secondBy) {
 
         List<Share> collect = shareService
-            .findAll(RestControllerUtils.getPageable(pageNo, pageSize, orderBy))
+            .findAll(RestControllerUtils.getPageable(pageNo, pageSize, orderBy, secondBy))
             .stream()
             .collect(Collectors.toList());
         log.info(

@@ -59,10 +59,7 @@ public class RestSharePublic {
         if (list.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        List<ShareDtoPublic> publicList = get(list);
-
-        return new ResponseEntity<>(publicList, HttpStatus.OK);
+        return new ResponseEntity<>(get(list), HttpStatus.OK);
     }
 
 
@@ -70,9 +67,10 @@ public class RestSharePublic {
     public ResponseEntity<List<ShareDtoPublic>> pages(
         @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
         @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
-        @RequestParam(value = "sortBy", defaultValue = "version") String... orderBy) {
+        @RequestParam(value = "sortBy", defaultValue = "version") String[] orderBy,
+        @RequestParam(value = "secondBy", defaultValue = "version") String[] secondBy) {
         List<Share> shares = shareService
-            .findAll(RestControllerUtils.getPageable(pageNo, pageSize, orderBy))
+            .findAll(RestControllerUtils.getPageable(pageNo, pageSize, orderBy, secondBy))
             .stream()
             .collect(Collectors.toList());
         log.info(
@@ -84,10 +82,9 @@ public class RestSharePublic {
 
     private List<ShareDtoPublic> get(List<Share> list) {
         List<ShareDtoPublic> publicList = new ArrayList<>();
-        for (Share share : list) {
-            ShareDtoPublic aPublic = ShareDtoPublic.open(share);
-            publicList.add(aPublic);
-        }
+        list.forEach(l -> {
+            publicList.add(ShareDtoPublic.open(l));
+        });
         return publicList;
     }
 }
